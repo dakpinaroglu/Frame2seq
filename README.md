@@ -10,12 +10,6 @@ To use Frame2seq, install via pip:
 pip install frame2seq
 ```
 
-Alternatively, you can clone this repository and install the package locally:
-```bash
-$ git clone git@github.com:dakpinaroglu/Frame2seq.git
-$ pip install Frame2seq
-```
-
 ## Usage
 
 ### Sequence design
