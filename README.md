@@ -48,3 +48,5 @@ runner.design(pdb_file, chain_id, temperature, num_samples)
 ```
 
 [![DOI](https://zenodo.org/badge/DOI/10.1101/2023.12.15.571823.svg)](https://doi.org/10.1101/2023.12.15.571823)
+
+[zenodo link](https://zenodo.org/records/10431300)
