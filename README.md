@@ -2,7 +2,7 @@
 Official repository for Frame2seq, a structured-conditioned masked language model for protein sequence design, as described in our preprint [Structure-conditioned masked language models for protein sequence design generalize beyond the native sequence space](https://doi.org/10.1101/2023.12.15.571823).
 
 ## Colab notebook
-Colab notebook for generating sequences with Frame2seq: [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/dakpinaroglu/Frame2seq/blob/main/notebooks/Frame2seq.ipynb)
+Colab notebook for generating sequences with Frame2seq: [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/dakpinaroglu/Frame2seq/blob/main/Frame2seq.ipynb)
 
 ## Setup
 To use Frame2seq, install via pip:
