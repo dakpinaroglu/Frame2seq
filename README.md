@@ -35,6 +35,10 @@ runner.design(pdb_file, chain_id, temperature, num_samples)
 - `save_neg_pll`: Whether to save the per-residue negative log-likelihoods of the sampled sequences.
 - `verbose`: Whether to print the sampled sequences and time taken for sampling.
 
+#### Outputs (.fasta of sampled sequence)
+`>pdbid=2fra chain_id=A recovery=62.67% score=0.83 temperature=1.0
+PPSSVDWRDLGCITDVLDMGGCGACWAFSAVGALEARTTQKTGELTRLSAQDLVDCAREKYGNEGCDGGRMKSSFQFIIDKNGIDSHQAYPFTASDQECLYNSKYKAATCTDYTVLPEGDEDKLREAVSNVGPVAVGIDATHPEFRNFKSGVYHDPKCTTETNHGVLVVGYGTLKGKRFYKVKTCWGTYFGEDGFIRVAKNQGNHCGISTDPSYPEM`
+
 
 ## Citing this work
 
