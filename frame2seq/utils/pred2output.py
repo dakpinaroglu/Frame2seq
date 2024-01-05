@@ -1,7 +1,25 @@
 import pandas as pd
 
 
-def output_fasta(model_outs, fasta_dir):
+def output_fasta(preds, fasta_dir):
+    """
+    Given a predicted sequence, write to a fasta file.
+    """
+    with open(f"{fasta_dir}/seqs.fasta", "a") as f:
+        for sample_i in range(len(preds)):
+            pdbid_i = preds[sample_i]['pdbid']
+            chain_i = preds[sample_i]['chain']
+            seq_i = preds[sample_i]['seq']
+            recovery_i = preds[sample_i]['recovery']
+            avg_neg_pll_i = preds[sample_i]['avg_neg_pll']
+            temp_i = preds[sample_i]['temp']
+            f.write(
+                f">pdbid={pdbid_i} chain_id={chain_i} recovery={recovery_i*100:.2f}% score={avg_neg_pll_i:.2f} temperature={temp_i}\n"
+            )
+            f.write(f"{seq_i}\n")
+
+
+def output_indiv_fasta(model_outs, fasta_dir):
     """
     Given a predicted sequence, write to a fasta file.
     """

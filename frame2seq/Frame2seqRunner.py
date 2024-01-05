@@ -39,14 +39,15 @@ class Frame2seqRunner():
                chain_id,
                temperature,
                num_samples,
-               save_neg_pll=True,
+               save_indiv_seqs=False,
+               save_indiv_neg_pll=False,
                verbose=True):
         """
         Design sequences for a given PDB file and chain ID.
         """
         start_time = time()
         design(self, pdb_file, chain_id, temperature, num_samples,
-               save_neg_pll, verbose)
+               save_indiv_seqs, save_indiv_neg_pll, verbose)
         if verbose:
             print(
                 f"Designed {num_samples} sequences in {time() - start_time:.2f} seconds."
