@@ -1,15 +1,16 @@
 import os
 from tqdm import tqdm
 import torch
+import numpy as np
 
 from frame2seq.utils import residue_constants
 from frame2seq.utils.util import get_neg_pll
 from frame2seq.utils.pdb2input import get_inference_inputs
-from frame2seq.utils.pred2output import output_fasta, output_csv, output_indiv_fasta, output_indiv_csv
+from frame2seq.utils.pred2output import output_fasta, output_indiv_fasta, output_indiv_csv
 
 
-def design(self, pdb_file, chain_id, temperature, num_samples, save_indiv_seqs,
-           save_indiv_neg_pll, verbose):
+def design(self, pdb_file, chain_id, temperature, num_samples, omit_AA,
+           save_indiv_seqs, save_indiv_neg_pll, verbose):
     seq_mask, aatype, X = get_inference_inputs(pdb_file, chain_id)
     seq_mask = seq_mask.to(self.device)
     aatype = aatype.to(self.device)
@@ -31,6 +32,9 @@ def design(self, pdb_file, chain_id, temperature, num_samples, save_indiv_seqs,
         pred_seq2 = self.models[1].forward(X, seq_mask, input_aatype_onehot)
         pred_seq3 = self.models[2].forward(X, seq_mask, input_aatype_onehot)
         pred_seq = (pred_seq1 + pred_seq2 + pred_seq3) / 3  # ensemble
+        if omit_AA is not None:
+            for aa in omit_AA:
+                pred_seq[:, :, residue_constants.AA_TO_ID[aa]] = -np.inf
         pred_seq = pred_seq / temperature
         pred_seq = torch.nn.functional.softmax(pred_seq, dim=-1)
         pred_seq = pred_seq[seq_mask]
