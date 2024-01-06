@@ -21,3 +21,16 @@ def his_tag_mask(aatype_int):
         last_non_his = torch.where(aatype_int[0] != 6)[0][-1]
         his_mask[0][last_non_his + 1:] = 0
     return his_mask
+
+
+def read_fasta_file(fasta_file):
+    """
+    Read a fasta file and return a list of sequences.
+    """
+    with open(fasta_file, 'r') as f:
+        lines = f.readlines()
+    sequences = []
+    for line in lines:
+        if line[0] == '>':
+            sequences.append(lines[lines.index(line) + 1].strip())
+    return sequences

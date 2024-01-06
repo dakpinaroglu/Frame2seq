@@ -3,7 +3,7 @@ import pandas as pd
 
 def output_fasta(preds, fasta_dir):
     """
-    Given a predicted sequence, write to a fasta file.
+    Given predicted sequences, write to a fasta file.
     """
     with open(f"{fasta_dir}/seqs.fasta", "a") as f:
         for sample_i in range(len(preds)):
@@ -38,9 +38,21 @@ def output_indiv_fasta(model_outs, fasta_dir):
         f.write(f"{seq}\n")
 
 
-def output_csv(scores, csv_dir):
+def output_csv(preds, csv_dir):
     """
-    Given a negative pseudo-log-likelihood, write to a csv file.
+    Given average negative pseudo-log-likelihoods, write to a csv file.
+    """
+    df = pd.DataFrame(columns=[
+        'PDBID', 'Chain ID', 'Sample Number', 'Scored sequence',
+        'Average negative pseudo-log-likelihood', 'Temperature'
+    ],
+                      data=preds)
+    df.to_csv(f"{csv_dir}/scores.csv", index=False)
+
+
+def output_indiv_csv(scores, csv_dir):
+    """
+    Given per-residue negative pseudo-log-likelihoods, write to a csv file.
     """
     pdbid = scores['pdbid']
     chain = scores['chain']

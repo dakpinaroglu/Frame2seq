@@ -5,7 +5,7 @@ import torch
 from frame2seq.utils import residue_constants
 from frame2seq.utils.util import get_neg_pll
 from frame2seq.utils.pdb2input import get_inference_inputs
-from frame2seq.utils.pred2output import output_fasta, output_csv, output_indiv_fasta
+from frame2seq.utils.pred2output import output_fasta, output_csv, output_indiv_fasta, output_indiv_csv
 
 
 def design(self, pdb_file, chain_id, temperature, num_samples, save_indiv_seqs,
@@ -25,7 +25,7 @@ def design(self, pdb_file, chain_id, temperature, num_samples, save_indiv_seqs,
     input_aatype_onehot = torch.zeros_like(input_aatype_onehot)
     input_aatype_onehot[:, :,
                         20] = 1  # all positions are masked (set to unknown)
-    model_outs, scores, preds = {}, {}, []
+    model_outs, scores, preds, scores_out = {}, {}, [], []
     with torch.no_grad():
         pred_seq1 = self.models[0].forward(X, seq_mask, input_aatype_onehot)
         pred_seq2 = self.models[1].forward(X, seq_mask, input_aatype_onehot)
@@ -39,7 +39,11 @@ def design(self, pdb_file, chain_id, temperature, num_samples, save_indiv_seqs,
                                         replacement=True)
         for sample in tqdm(range(num_samples)):
             sampled_seq_i = sampled_seq[:, sample]
+            input_seq_i = aatype[seq_mask]  # sequence from the input PDB file
             neg_pll, avg_neg_pll = get_neg_pll(pred_seq, sampled_seq_i)
+            input_neg_pll, input_avg_neg_pll = get_neg_pll(
+                pred_seq, input_seq_i
+            )  # negative pseudo-log-likelihood of the input sequence
             recovery = torch.sum(
                 sampled_seq_i == aatype[seq_mask]) / torch.sum(seq_mask)
             sampled_seq_i = [
@@ -74,7 +78,7 @@ def design(self, pdb_file, chain_id, temperature, num_samples, save_indiv_seqs,
                 ]
                 csv_dir = os.path.join(self.save_dir, 'scores')
                 os.makedirs(csv_dir, exist_ok=True)
-                output_csv(scores, csv_dir)
+                output_indiv_csv(scores, csv_dir)
         output_fasta(
-            preds,
-            fasta_dir)  # all sequences automatically saved to one fasta file
+            preds, fasta_dir
+        )  # all generated sequences automatically saved to one fasta file

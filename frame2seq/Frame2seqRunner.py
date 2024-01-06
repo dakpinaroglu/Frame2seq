@@ -5,6 +5,7 @@ import torch
 
 from frame2seq.model.Frame2seq import frame2seq
 from frame2seq.utils.design import design
+from frame2seq.utils.score import score
 
 
 class Frame2seqRunner():
@@ -52,3 +53,19 @@ class Frame2seqRunner():
             print(
                 f"Designed {num_samples} sequences in {time() - start_time:.2f} seconds."
             )
+
+    def score(self,
+              pdb_file,
+              chain_id,
+              temperature,
+              fasta_file=None,
+              save_indiv_neg_pll=False,
+              verbose=True):
+        """
+        Score the sequence for a given PDB file and chain ID. Optionally, provide a fasta file with many sequences to score for the given PDB's backbone.
+        """
+        start_time = time()
+        score(self, pdb_file, chain_id, fasta_file, temperature,
+              save_indiv_neg_pll)
+        if verbose:
+            print(f"Scored sequences in {time() - start_time:.2f} seconds.")
