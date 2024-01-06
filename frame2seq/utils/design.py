@@ -10,7 +10,7 @@ from frame2seq.utils.pred2output import output_fasta, output_indiv_fasta, output
 
 
 def design(self, pdb_file, chain_id, temperature, num_samples, omit_AA,
-           save_indiv_seqs, save_indiv_neg_pll, verbose):
+           fixed_positions, save_indiv_seqs, save_indiv_neg_pll, verbose):
     seq_mask, aatype, X = get_inference_inputs(pdb_file, chain_id)
     seq_mask = seq_mask.to(self.device)
     aatype = aatype.to(self.device)
@@ -23,10 +23,16 @@ def design(self, pdb_file, chain_id, temperature, num_samples, omit_AA,
     input_aatype_onehot = torch.from_numpy(input_aatype_onehot).float()
     input_aatype_onehot = input_aatype_onehot.unsqueeze(0)
     input_aatype_onehot = input_aatype_onehot.to(self.device)
-    input_aatype_onehot = torch.zeros_like(input_aatype_onehot)
-    input_aatype_onehot[:, :,
-                        20] = 1  # all positions are masked (set to unknown)
-    model_outs, scores, preds, scores_out = {}, {}, [], []
+    if fixed_positions is None:
+        input_aatype_onehot = torch.zeros_like(input_aatype_onehot)
+        input_aatype_onehot[:, :,
+                            20] = 1  # all positions are masked (set to unknown)
+    else:
+        for pos in fixed_positions:
+            input_aatype_onehot[:, pos, :] = 0
+            input_aatype_onehot[:, pos, aatype[0][
+                pos]] = 1  # fixed positions set to the input sequence
+    model_outs, scores, preds = {}, {}, []
     with torch.no_grad():
         pred_seq1 = self.models[0].forward(X, seq_mask, input_aatype_onehot)
         pred_seq2 = self.models[1].forward(X, seq_mask, input_aatype_onehot)

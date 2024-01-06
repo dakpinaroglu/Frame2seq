@@ -41,6 +41,7 @@ class Frame2seqRunner():
                temperature,
                num_samples,
                omit_AA=None,
+               fixed_positions=None,
                save_indiv_seqs=False,
                save_indiv_neg_pll=False,
                verbose=True):
@@ -49,7 +50,7 @@ class Frame2seqRunner():
         """
         start_time = time()
         design(self, pdb_file, chain_id, temperature, num_samples, omit_AA,
-               save_indiv_seqs, save_indiv_neg_pll, verbose)
+               fixed_positions, save_indiv_seqs, save_indiv_neg_pll, verbose)
         if verbose:
             print(
                 f"Designed {num_samples} sequences in {time() - start_time:.2f} seconds."
