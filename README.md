@@ -11,6 +11,10 @@ To use Frame2seq, install via pip:
 ```bash
 pip install frame2seq
 ```
+If previously installed via pip, upgrade to the latest version:
+```bash
+pip install --upgrade frame2seq
+```
 
 ## Usage
 
