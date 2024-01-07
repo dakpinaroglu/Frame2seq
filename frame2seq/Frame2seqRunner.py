@@ -59,7 +59,6 @@ class Frame2seqRunner():
     def score(self,
               pdb_file,
               chain_id,
-              temperature,
               fasta_file=None,
               save_indiv_neg_pll=False,
               verbose=True):
@@ -67,7 +66,6 @@ class Frame2seqRunner():
         Score the sequence for a given PDB file and chain ID. Optionally, provide a fasta file with many sequences to score for the given PDB's backbone.
         """
         start_time = time()
-        score(self, pdb_file, chain_id, fasta_file, temperature,
-              save_indiv_neg_pll)
+        score(self, pdb_file, chain_id, fasta_file, save_indiv_neg_pll)
         if verbose:
             print(f"Scored sequences in {time() - start_time:.2f} seconds.")

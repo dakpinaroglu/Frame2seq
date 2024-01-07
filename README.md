@@ -25,21 +25,72 @@ runner = Frame2seqRunner()
 runner.design(pdb_file, chain_id, temperature, num_samples)
 ```
 
-
 #### Arguments
 
 - `pdb_file`: Path to PDB file.
 - `chain_id`: Chain ID of protein.
 - `temperature`: Sampling temperature.
 - `num_samples`: Number of sequences to sample.
-- `save_neg_pll`: Whether to save the per-residue negative log-likelihoods of the sampled sequences.
-- `verbose`: Whether to print the sampled sequences and time taken for sampling.
+- `omit_AAs`: Amino acids to omit from sampling. Pass a list of single-letter amino acid strings (e.g. `['C', 'M']`). Default None.
+- `fixed_positions`: Amino acid positions to fix during sampling. Pass a list of integers (e.g. `[1, 3, 11]`). Residue numbering starts from 1. Default None.
+- `save_indiv_seqs`: Whether to save sequences to indidual .fasta files. Default False.
+- `save_indiv_neg_pll`: Whether to save the per-residue negative pseudo-log-likelihoods of the sampled sequences. Default False.
+- `verbose`: Whether to print the sampled sequences and time taken for sampling. Default True.
 
-#### Outputs (.fasta of sampled sequence)
+#### Outputs 
+
+A .fasta file containing all sampled sequences is automatically saved. If `save_indiv_seqs` is True, individual .fasta files for each sampled sequence are also saved. 
+
 ```
 >pdbid=2fra chain_id=A recovery=62.67% score=0.83 temperature=1.0
 PPSSVDWRDLGCITDVLDMGGCGACWAFSAVGALEARTTQKTGELTRLSAQDLVDCAREKYGNEGCDGGRMKSSFQFIIDKNGIDSHQAYPFTASDQECLYNSKYKAATCTDYTVLPEGDEDKLREAVSNVGPVAVGIDATHPEFRNFKSGVYHDPKCTTETNHGVLVVGYGTLKGKRFYKVKTCWGTYFGEDGFIRVAKNQGNHCGISTDPSYPEM
 ```
+
+If `save_indiv_neg_pll` is True, a .csv file containing the per-residue negative pseudo-log-likelihoods of the sampled sequences is also saved.
+
+### Advanced sequence design
+
+To use Frame2seq to generate sequences with advanced options, you can use the `design` function with additional arguments.
+
+```python
+from frame2seq import Frame2seqRunner
+
+runner = Frame2seqRunner()
+runner.design(pdb_file, chain_id, temperature, num_samples, omit_AAs=['C'], fixed_positions=[1, 3, 11])
+```
+
+### Scoring
+
+To use Frame2seq to score sequences, you can use the `score` function.
+
+The following will score the PDB sequence for the PDB backbone.
+```python
+from frame2seq import Frame2seqRunner
+
+runner = Frame2seqRunner()
+runner.score(pdb_file, chain_id)
+```
+
+The following will score all sequences in the given .fasta file for the PDB backbone.
+```python
+from frame2seq import Frame2seqRunner
+
+runner = Frame2seqRunner()
+runner.score(pdb_file, chain_id, fasta_file)
+```
+
+#### Arguments
+
+- `pdb_file`: Path to PDB file.
+- `chain_id`: Chain ID of protein.
+- `fasta_file`: Path to .fasta file containing sequences to score. Default None. If None, will score the PDB sequence.
+- `save_indiv_neg_pll`: Whether to save the per-residue negative pseudo-log-likelihoods of the given sequence(s). Default False.
+- `verbose`: Whether to print time taken for scoring. Default True.
+
+#### Outputs 
+
+A .csv file containing the average negative pseudo-log-likelihoods of the given sequence(s) is automatically saved. If `save_indiv_neg_pll` is True, per-residue negative pseudo-log-likelihoods are also saved in individual .csv files.
+
 
 ## Citing this work
 

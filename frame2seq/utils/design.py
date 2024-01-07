@@ -23,12 +23,12 @@ def design(self, pdb_file, chain_id, temperature, num_samples, omit_AA,
     input_aatype_onehot = torch.from_numpy(input_aatype_onehot).float()
     input_aatype_onehot = input_aatype_onehot.unsqueeze(0)
     input_aatype_onehot = input_aatype_onehot.to(self.device)
-    if fixed_positions is None:
-        input_aatype_onehot = torch.zeros_like(input_aatype_onehot)
-        input_aatype_onehot[:, :,
-                            20] = 1  # all positions are masked (set to unknown)
-    else:
+    input_aatype_onehot = torch.zeros_like(input_aatype_onehot)
+    input_aatype_onehot[:, :,
+                        20] = 1  # all positions are masked (set to unknown)
+    if fixed_positions is not None:
         for pos in fixed_positions:
+            pos = pos - 1  # convert to 0-indexing
             input_aatype_onehot[:, pos, :] = 0
             input_aatype_onehot[:, pos, aatype[0][
                 pos]] = 1  # fixed positions set to the input sequence

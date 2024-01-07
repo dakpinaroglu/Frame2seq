@@ -8,8 +8,8 @@ from frame2seq.utils.pdb2input import get_inference_inputs
 from frame2seq.utils.pred2output import output_csv, output_indiv_csv
 
 
-def score(self, pdb_file, chain_id, fasta_file, temperature,
-          save_indiv_neg_pll):
+def score(self, pdb_file, chain_id, fasta_file, save_indiv_neg_pll):
+    temperature = 1.0
     seq_mask, aatype, X = get_inference_inputs(pdb_file, chain_id)
     seq_mask = seq_mask.to(self.device)
     aatype = aatype.to(self.device)
