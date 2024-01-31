@@ -35,7 +35,7 @@ runner.design(pdb_file, chain_id, temperature, num_samples)
 - `chain_id`: Chain ID of protein.
 - `temperature`: Sampling temperature.
 - `num_samples`: Number of sequences to sample.
-- `omit_AAs`: Amino acids to omit from sampling. Pass a list of single-letter amino acid strings (e.g. `['C', 'M']`). Default None.
+- `omit_AA`: Amino acids to omit from sampling. Pass a list of single-letter amino acid strings (e.g. `['C', 'M']`). Default None.
 - `fixed_positions`: Amino acid positions to fix during sampling. Pass a list of integers (e.g. `[1, 3, 11]`). Residue numbering starts from 1. Default None.
 - `save_indiv_seqs`: Whether to save sequences to indidual .fasta files. Default False.
 - `save_indiv_neg_pll`: Whether to save the per-residue negative pseudo-log-likelihoods of the sampled sequences. Default False.
@@ -60,7 +60,7 @@ To use Frame2seq to generate sequences with advanced options, you can use the `d
 from frame2seq import Frame2seqRunner
 
 runner = Frame2seqRunner()
-runner.design(pdb_file, chain_id, temperature, num_samples, omit_AAs=['C'], fixed_positions=[1, 3, 11])
+runner.design(pdb_file, chain_id, temperature, num_samples, omit_AA=['C'], fixed_positions=[1, 3, 11])
 ```
 
 ### Scoring

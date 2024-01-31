@@ -32,7 +32,7 @@ def design(self, pdb_file, chain_id, temperature, num_samples, omit_AA,
             input_aatype_onehot[:, pos, :] = 0
             input_aatype_onehot[:, pos, aatype[0][
                 pos]] = 1  # fixed positions set to the input sequence
-    model_outs, scores, preds = {}, {}, []
+    preds, scores = [], {}
     with torch.no_grad():
         pred_seq1 = self.models[0].forward(X, seq_mask, input_aatype_onehot)
         pred_seq2 = self.models[1].forward(X, seq_mask, input_aatype_onehot)
@@ -41,8 +41,12 @@ def design(self, pdb_file, chain_id, temperature, num_samples, omit_AA,
         if omit_AA is not None:
             for aa in omit_AA:
                 pred_seq[:, :, residue_constants.AA_TO_ID[aa]] = -np.inf
+        pred_seq_unscaled = pred_seq  # temperature should be 1.0 when scoring
         pred_seq = pred_seq / temperature
+        pred_seq_unscaled = torch.nn.functional.softmax(pred_seq_unscaled,
+                                                        dim=-1)
         pred_seq = torch.nn.functional.softmax(pred_seq, dim=-1)
+        pred_seq_unscaled = pred_seq_unscaled[seq_mask]
         pred_seq = pred_seq[seq_mask]
         sampled_seq = torch.multinomial(pred_seq,
                                         num_samples=num_samples,
@@ -50,9 +54,10 @@ def design(self, pdb_file, chain_id, temperature, num_samples, omit_AA,
         for sample in tqdm(range(num_samples)):
             sampled_seq_i = sampled_seq[:, sample]
             input_seq_i = aatype[seq_mask]  # sequence from the input PDB file
-            neg_pll, avg_neg_pll = get_neg_pll(pred_seq, sampled_seq_i)
+            neg_pll, avg_neg_pll = get_neg_pll(pred_seq_unscaled,
+                                               sampled_seq_i)
             input_neg_pll, input_avg_neg_pll = get_neg_pll(
-                pred_seq, input_seq_i
+                pred_seq_unscaled, input_seq_i
             )  # negative pseudo-log-likelihood of the input sequence
             recovery = torch.sum(
                 sampled_seq_i == aatype[seq_mask]) / torch.sum(seq_mask)
@@ -66,18 +71,14 @@ def design(self, pdb_file, chain_id, temperature, num_samples, omit_AA,
                     f"Average negative pseudo-log-likelihood : {avg_neg_pll:.2f}"
                 )
                 print(f"Sequence: {sampled_seq_i}")
-            model_outs['pdbid'] = pdb_file.split('/')[-1].split('.')[0]
-            model_outs['chain'] = chain_id
-            model_outs['sample'] = sample
-            model_outs['seq'] = sampled_seq_i
-            model_outs['recovery'] = recovery
-            model_outs['avg_neg_pll'] = avg_neg_pll
-            model_outs['temp'] = temperature
-            preds.append(model_outs)
+            preds.append([
+                pdb_file.split('/')[-1].split('.')[0], chain_id, sample,
+                sampled_seq_i, recovery, avg_neg_pll, temperature
+            ])
             fasta_dir = os.path.join(self.save_dir, 'seqs')
             os.makedirs(fasta_dir, exist_ok=True)
             if save_indiv_seqs:  # save per-sequence fasta files
-                output_indiv_fasta(model_outs, fasta_dir)
+                output_indiv_fasta(preds[-1], fasta_dir)
             if save_indiv_neg_pll:  # save per-residue negative pseudo-log-likelihoods
                 scores['pdbid'] = pdb_file.split('/')[-1].split('.')[0]
                 scores['chain'] = chain_id
